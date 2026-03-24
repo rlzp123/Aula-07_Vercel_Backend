@@ -117,18 +117,26 @@ try{
 //   Body → JSON → cole o body acima
 // =============================================================
 router.post('/', async (req, res, next) => {
-    try{
-        const {data, error} = await supabase
-        .from('produtos')
-        .insert([req.body])
-        .select()
-        if(error) throw error;
-        res.status(201).json(data[0]);
+    try {
+        const novoProduto = {
+            ...req.body,
+            categoria_id: req.body.categoria_id ?? req.body.categoriaId
+        };
 
-    }catch (err) {
+        delete novoProduto.categoriaId;
+        delete novoProduto.categoria_Id;
+
+        const { data, error } = await supabase
+            .from('produtos')
+            .insert([novoProduto])
+            .select();
+
+        if (error) throw error;
+
+        res.status(201).json(data[0]);
+    } catch (err) {
         next(err);
     }
-
 });
 
 // =============================================================
